@@ -5,10 +5,16 @@ interface RealtimeConnection {
   stop: () => Promise<void>;
 }
 
+interface RealtimeTranscriptDelta {
+  item_id: string;
+  text: string;
+}
+
 export async function connectRealtimeTranscription(
   sessionId: string,
   stream: MediaStream,
   onCompleted: (segment: TranscriptSegment) => void,
+  onDelta?: (delta: RealtimeTranscriptDelta) => void,
 ): Promise<RealtimeConnection> {
   const tokenResponse = await fetch(`${API_BASE}/sessions/${sessionId}/transcription-token`, {
     method: "POST",
@@ -24,15 +30,22 @@ export async function connectRealtimeTranscription(
   const peer = new RTCPeerConnection();
   const dataChannel = peer.createDataChannel("oai-events");
   stream.getAudioTracks().forEach((track) => peer.addTrack(track, stream));
+  let resolveCommittedTranscript: (() => void) | null = null;
 
   dataChannel.addEventListener("message", (event) => {
     const payload = JSON.parse(event.data);
+    if (payload.type === "conversation.item.input_audio_transcription.delta") {
+      const text = payload.delta ?? payload.text ?? "";
+      if (text) onDelta?.({ item_id: payload.item_id, text });
+    }
     if (payload.type === "conversation.item.input_audio_transcription.completed") {
       onCompleted({
         item_id: payload.item_id,
         text: payload.transcript,
         source: "realtime",
       });
+      resolveCommittedTranscript?.();
+      resolveCommittedTranscript = null;
     }
   });
 
@@ -55,8 +68,14 @@ export async function connectRealtimeTranscription(
   return {
     stop: async () => {
       if (dataChannel.readyState === "open") {
+        const completed = new Promise<void>((resolve) => {
+          resolveCommittedTranscript = resolve;
+        });
         dataChannel.send(JSON.stringify({ type: "input_audio_buffer.commit" }));
-        await new Promise((resolve) => window.setTimeout(resolve, 1200));
+        await Promise.race([
+          completed,
+          new Promise<void>((resolve) => window.setTimeout(resolve, 5000)),
+        ]);
       }
       dataChannel.close();
       peer.close();

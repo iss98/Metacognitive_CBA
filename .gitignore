@@ -10,6 +10,13 @@ coverage/
 .vitest-cache/
 .tmp/
 
+# Backend and LangGraph artifacts if copied into the web repository
+.langgraph_api/
+*.pckl
+*.pkl
+__pycache__/
+*.py[cod]
+
 # Local deployment metadata
 .netlify/
 .vercel/

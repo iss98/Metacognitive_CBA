@@ -1,4 +1,5 @@
 export type SessionState =
+  | "audio_check"
   | "created"
   | "survey_done"
   | "recording"
@@ -88,7 +89,14 @@ export interface StudySession {
   id: string;
   participant_code: string;
   state: SessionState;
-  survey_responses: Array<{ item_id: string; score: number }>;
+  audio_check?: {
+    expected_text: string;
+    transcript: string;
+    normalized_match: boolean;
+    completed_at: string;
+  } | null;
+  survey_order: string[];
+  survey_responses: Array<{ item_id: string; score: number; factor?: Factor; display_order?: number }>;
   transcript_segments: TranscriptSegment[];
   questions: InterviewQuestion[];
   interview_turns: InterviewTurn[];
@@ -103,5 +111,8 @@ export interface Problem {
   id: string;
   title: string;
   stem: string;
+  stem_math: string;
+  image_path: string;
+  image_alt: string;
 }
 

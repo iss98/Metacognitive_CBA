@@ -33,7 +33,12 @@ export const api = {
     }),
   getSession: (sessionId: string) => request<StudySession>(`/sessions/${sessionId}`),
   listSessions: () => request<Array<Pick<StudySession, "id" | "participant_code" | "state" | "execution_mode"> & { updated_at: string }>>("/sessions"),
-  submitSurvey: (sessionId: string, responses: Array<{ item_id: string; score: number }>) =>
+  completeAudioCheck: (sessionId: string, transcript: string) =>
+    request<StudySession>(`/sessions/${sessionId}/audio-check`, {
+      method: "POST",
+      body: JSON.stringify({ transcript }),
+    }),
+  submitSurvey: (sessionId: string, responses: Array<{ item_id: string; score: number; factor: string; display_order: number }>) =>
     request<StudySession>(`/sessions/${sessionId}/survey`, {
       method: "PUT",
       body: JSON.stringify({ responses }),

@@ -35,12 +35,12 @@ export default function Home() {
         <h1>수학을 푼 답보다,<br />풀어 가는 생각을 봅니다.</h1>
         <p className="lede">
           한 문제를 풀며 생각을 소리 내어 말하고, 풀이가 끝난 뒤 AI와 차분히 되짚어 봅니다.
-          사전 설문과 실제 풀이에서 드러난 모습을 함께 살펴보는 연구 도구입니다.
+          설문 응답과 실제 문제 풀이에서 드러난 모습을 함께 살펴보는 연구 도구입니다.
         </p>
         <dl className="study-facts">
           <div><dt>예상 시간</dt><dd>25–35분</dd></div>
           <div><dt>준비물</dt><dd>마이크, 조용한 공간</dd></div>
-          <div><dt>진행</dt><dd>설문 · 풀이 · 채팅 · 비교</dd></div>
+          <div><dt>진행</dt><dd>음성 확인 · 설문 · 풀이 · 대화</dd></div>
         </dl>
       </section>
 
