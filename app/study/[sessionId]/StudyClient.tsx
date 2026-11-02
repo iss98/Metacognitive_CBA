@@ -123,7 +123,7 @@ export function StudyClient({ sessionId }: { sessionId: string }) {
         {["transcript_ready", "schema_ready"].includes(session.state) && (
           <TransitionPanel
             title="풀이 기록이 안전하게 저장되었습니다."
-            text="이제 문제를 풀며 실제로 말한 내용을 정리하고, 풀이를 되짚는 질문 10개를 준비합니다."
+            text="이제 문제를 풀며 실제로 말한 내용을 정리하고, 풀이를 되짚는 질문 7개를 준비합니다."
             action="풀이 대화 준비하기"
             busy={busy}
             onClick={() => run(() => api.prepareInterview(sessionId))}
@@ -133,7 +133,7 @@ export function StudyClient({ sessionId }: { sessionId: string }) {
         {session.state === "questions_ready" && (
           <TransitionPanel
             title="풀이 대화를 시작할 준비가 됐습니다."
-            text="기본 질문 10개를 모두 순서대로 묻습니다. 한 질문에 답이 부족하면 그 질문에 대해서만 짧은 추가 질문이 나옵니다."
+            text="기본 질문 7개를 대화 맥락에 맞게 이어서 묻습니다. 한 질문에 답이 부족하면 그 질문에 대해서만 짧은 추가 질문이 나옵니다."
             action="채팅으로 대화 시작하기"
             busy={busy}
             onClick={() => run(() => api.startInterview(sessionId))}
@@ -146,7 +146,7 @@ export function StudyClient({ sessionId }: { sessionId: string }) {
 
         {session.state === "interview_done" && (
           <TransitionPanel
-            title="10개 기본 질문을 모두 마쳤습니다."
+            title="7개 기본 질문을 모두 마쳤습니다."
             text="각 질문의 답변과 문제를 풀며 말한 내용을 함께 살펴보고, 질문별 결과와 영역별 평균을 만듭니다."
             action="결과 만들기"
             busy={busy}
@@ -262,7 +262,7 @@ export function TestPreviewClient() {
         {step === "transcript" && (
           <TransitionPanel
             title="풀이 기록이 안전하게 저장되었습니다."
-            text="이제 문제를 풀며 실제로 말한 내용을 정리하고, 풀이를 되짚는 질문 10개를 준비합니다."
+            text="이제 문제를 풀며 실제로 말한 내용을 정리하고, 풀이를 되짚는 질문 7개를 준비합니다."
             action="풀이 대화 준비하기"
             busy={false}
             onClick={() => choose("ready")}
@@ -271,7 +271,7 @@ export function TestPreviewClient() {
         {step === "ready" && (
           <TransitionPanel
             title="풀이 대화를 시작할 준비가 됐습니다."
-            text="기본 질문 10개를 모두 순서대로 묻습니다. 한 질문에 답이 부족하면 그 질문에 대해서만 짧은 추가 질문이 나옵니다."
+            text="기본 질문 7개를 대화 맥락에 맞게 이어서 묻습니다. 한 질문에 답이 부족하면 그 질문에 대해서만 짧은 추가 질문이 나옵니다."
             action="채팅으로 대화 시작하기"
             busy={false}
             onClick={() => choose("interview")}
@@ -290,7 +290,7 @@ export function TestPreviewClient() {
         )}
         {step === "interview-done" && (
           <TransitionPanel
-            title="10개 기본 질문을 모두 마쳤습니다."
+            title="7개 기본 질문을 모두 마쳤습니다."
             text="각 질문의 답변과 문제를 풀며 말한 내용을 함께 살펴보고, 질문별 결과와 영역별 평균을 만듭니다."
             action="결과 만들기"
             busy={false}
@@ -308,9 +308,7 @@ export function TestPreviewClient() {
 function buildPreviewSession(items: SurveyItem[], extraTurns: StudySession["interview_turns"]): StudySession {
   const factors: Factor[] = [
     "planning", "monitoring", "debugging", "evaluation",
-    "declarative_knowledge", "declarative_knowledge",
-    "procedural_knowledge", "procedural_knowledge",
-    "conditional_knowledge", "conditional_knowledge",
+    "declarative_knowledge", "procedural_knowledge", "conditional_knowledge",
   ];
   const questions = factors.map((factor, index) => ({
     id: `preview-q-${index + 1}`,
@@ -319,7 +317,7 @@ function buildPreviewSession(items: SurveyItem[], extraTurns: StudySession["inte
     text: index === 2
       ? "처음 세운 방법으로 답이 나오지 않았을 때, 어떤 점을 확인하고 다음 방법을 정했나요?"
       : `${factorLabels[factor]}과 관련해 문제를 풀던 당시의 판단을 구체적으로 설명해 주세요.`,
-    direction: ([5, 7, 9].includes(index) ? "reverse" : "direct") as "direct" | "reverse",
+    direction: "direct" as const,
     intent: "절차 자료 제작을 위한 예시 질문",
     status: (index < 2 ? "answered" : index === 2 ? "active" : "pending") as "pending" | "active" | "answered",
     followup_count: index === 2 ? 1 : 0,
@@ -327,8 +325,8 @@ function buildPreviewSession(items: SurveyItem[], extraTurns: StudySession["inte
   const baseTurns: StudySession["interview_turns"] = [
     { id: "preview-turn-1", question_id: "preview-q-1", role: "assistant", text: "문제를 처음 읽었을 때 어떤 순서로 풀려고 했나요?", kind: "base_question" },
     { id: "preview-turn-2", question_id: "preview-q-1", role: "student", text: "먼저 경우를 나누고, 원탁에서 서로 이웃하면 안 되는 조건을 하나씩 확인하려고 했습니다.", kind: "answer" },
-    { id: "preview-turn-3", question_id: "preview-q-2", role: "assistant", text: "풀이를 시작하기 전에 답이 어느 정도일지 예상해 보았나요?", kind: "base_question" },
-    { id: "preview-turn-4", question_id: "preview-q-2", role: "student", text: "정확한 값은 예상하지 못했지만 전체 경우보다 크게 줄어들 거라고 생각했습니다.", kind: "answer" },
+    { id: "preview-turn-3", question_id: "preview-q-2", role: "assistant", text: "풀이 중 접근이 맞는지 확인했던 기준을 설명해 줄 수 있나요?", kind: "base_question" },
+    { id: "preview-turn-4", question_id: "preview-q-2", role: "student", text: "전체 경우보다 값이 줄어드는지 살펴보고 이웃 조건을 다시 확인했습니다.", kind: "answer" },
     { id: "preview-turn-5", question_id: "preview-q-3", role: "assistant", text: "처음 세운 방법으로 답이 나오지 않았을 때, 어떤 점을 확인하고 다음 방법을 정했나요?", kind: "base_question" },
   ];
   const itemRatings = questions.map((question, index) => ({
@@ -806,12 +804,12 @@ function ResultsPanel({ session, surveyItems, busy, onChoose }: { session: Study
       </div>
       <div className="item-analysis">
         <h2>문항별 분석</h2>
-        <p>역방향 문항을 포함한 10개 문항을 각각 평가한 결과입니다.</p>
+        <p>7개 factor의 문항을 각각 평가한 결과입니다.</p>
         {session.item_ratings.map((rating) => {
           const question = session.questions.find((item) => item.id === rating.question_id);
           return (
             <details key={rating.question_id}>
-              <summary><span>{question?.order}. {factorLabels[rating.factor]}{rating.question_direction === "reverse" ? " · 역방향" : ""}</span><strong>{rating.score ?? "평가 불가"}</strong></summary>
+              <summary><span>{question?.order}. {factorLabels[rating.factor]}</span><strong>{rating.score ?? "평가 불가"}</strong></summary>
               <p className="question-text">{question?.text}</p><p>{rating.reason}</p>
             </details>
           );
