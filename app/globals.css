@@ -105,6 +105,7 @@ textarea { min-height: 116px; resize: vertical; }
 @keyframes pulse { 50% { opacity: .35; transform: scale(.7); } }
 .recorder-console { min-height: 140px; padding: 24px; display: grid; grid-template-columns: minmax(120px, 1fr) minmax(220px, 2fr) auto; align-items: center; gap: 24px; border: 1px solid var(--line); background: #eaf1f5; }
 .recorder-console p { color: var(--ink-soft); font-size: 14px; }
+.recording-ready { grid-column: 1 / -1; padding: 18px 22px; border: 2px solid #a36d13; background: #fff0b3; color: var(--ink); font-size: clamp(24px, 3vw, 34px); font-weight: 800; line-height: 1.35; text-align: center; word-break: keep-all; }
 .recorder-status { display: grid; gap: 12px; }
 .live-transcript { min-height: 76px; padding: 14px 16px; display: grid; gap: 5px; align-content: center; background: white; border: 1px solid #a9cccc; }
 .live-transcript span { color: var(--focus); font-size: 12px; font-weight: 800; letter-spacing: .04em; }
@@ -114,6 +115,7 @@ textarea { min-height: 116px; resize: vertical; }
 .recording-pill.live ~ * .signal span, .signal span:nth-child(3n) { height: 28px; }
 .signal span:nth-child(2n) { height: 16px; }
 .record-button { display: inline-flex; gap: 10px; align-items: center; border: 0; background: var(--ink); color: white; padding: 13px 18px; cursor: pointer; font-weight: 750; }
+.record-button:disabled { opacity: .65; cursor: wait; }
 .record-button span { width: 12px; height: 12px; background: var(--recording); border-radius: 50%; }
 .record-button.stop span { border-radius: 1px; }
 .transcript-fallback { margin-top: 18px; padding: 24px; display: grid; gap: 16px; background: white; border: 1px solid var(--line); }
@@ -194,6 +196,24 @@ textarea { min-height: 116px; resize: vertical; }
 .session-list time { color: var(--ink-soft); font-size: 14px; }
 .empty-list { padding: 50px 12px; color: var(--ink-soft); text-align: center; }
 
+.preview-link { display: block; margin-top: 10px; color: #725200; font-size: 14px; font-weight: 750; text-align: center; }
+.test-mode-nav { position: sticky; z-index: 20; top: 0; margin: 0 -18px 18px; padding: 14px 18px; display: grid; grid-template-columns: minmax(180px, .7fr) minmax(480px, 2.5fr) auto; align-items: center; gap: 18px; background: #fff1ad; border-bottom: 2px solid #b68a14; box-shadow: 0 8px 24px rgba(82, 61, 0, .12); }
+.test-mode-heading { display: grid; gap: 2px; color: #503b00; }
+.test-mode-heading span { font-size: 12px; font-weight: 800; }
+.test-mode-heading strong { font-size: 15px; }
+.test-step-list { display: flex; gap: 5px; overflow-x: auto; padding: 2px; }
+.test-step-list button, .test-mode-arrows button { border: 1px solid #c9a53f; background: rgba(255,255,255,.58); color: #5d4708; cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.test-step-list button { padding: 8px 10px; }
+.test-step-list button span { display: inline-grid; width: 20px; height: 20px; margin-right: 5px; place-items: center; border-radius: 50%; background: rgba(114,82,0,.11); font-size: 11px; }
+.test-step-list button.active { background: #17364c; border-color: #17364c; color: white; }
+.test-step-list button.active span { background: #fff1ad; color: #503b00; }
+.test-mode-arrows { display: flex; gap: 5px; justify-content: flex-end; }
+.test-mode-arrows button { padding: 8px 10px; }
+.test-mode-arrows button:disabled { cursor: not-allowed; opacity: .38; }
+.test-step-list button:focus-visible, .test-mode-arrows button:focus-visible { outline: 3px solid #08747b; outline-offset: 2px; }
+.preview-header { height: 58px; }
+.preview-badge { color: #725200 !important; background: #fff1ad !important; border-color: #c9a53f !important; }
+
 @media (max-width: 900px) {
   .landing { display: block; background: var(--paper); }
   .landing-copy { padding-bottom: 20px; }
@@ -210,6 +230,9 @@ textarea { min-height: 116px; resize: vertical; }
   .signal { display: none; }
   .problem-sheet { grid-template-columns: 1fr; }
   .problem-figure { max-width: 520px; justify-self: center; }
+  .test-mode-nav { position: static; grid-template-columns: 1fr; margin: 0 -22px 18px; }
+  .test-mode-arrows { justify-content: stretch; }
+  .test-mode-arrows button { flex: 1; }
 }
 
 @media (max-width: 600px) {

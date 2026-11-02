@@ -8,16 +8,17 @@ import { StatusMessage } from "@/components/StatusMessage";
 export default function Home() {
   const router = useRouter();
   const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   async function start(event: FormEvent) {
     event.preventDefault();
-    if (!code.trim()) return;
+    if (!code.trim() || !password) return;
     setBusy(true);
     setError("");
     try {
-      const session = await api.createSession(code.trim());
+      const session = await api.createSession(code.trim(), password);
       router.push(`/study/${session.id}`);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "세션을 시작하지 못했습니다.");
@@ -47,7 +48,7 @@ export default function Home() {
       <section className="entry-panel" aria-labelledby="entry-title">
         <div>
           <p className="step-kicker">실험 시작</p>
-          <h2 id="entry-title">연구자가 안내한 참가 코드를 입력하세요.</h2>
+          <h2 id="entry-title">연구자가 안내한 참가 코드와 비밀번호를 입력하세요.</h2>
           <p>코드는 이름 대신 실험 기록을 연결하는 데 사용됩니다.</p>
         </div>
         <form onSubmit={start}>
@@ -59,12 +60,24 @@ export default function Home() {
             placeholder="예: P-024"
             autoComplete="off"
           />
-          <button className="primary-button" disabled={busy || !code.trim()}>
+          <label htmlFor="entry-password">공통 비밀번호</label>
+          <input
+            id="entry-password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            autoComplete="current-password"
+            required
+          />
+          <button className="primary-button" disabled={busy || !code.trim() || !password}>
             {busy ? "실험을 준비하는 중…" : "실험 시작하기"}
           </button>
         </form>
         <StatusMessage error={error} />
         <a className="research-link" href="/research">연구자용 진행 현황 보기</a>
+        {process.env.NODE_ENV === "development" && (
+          <a className="preview-link" href="/preview">절차 자료용 테스트 화면 열기</a>
+        )}
       </section>
     </main>
   );

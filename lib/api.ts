@@ -26,10 +26,10 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   getProblem: () => request<Problem>("/problem"),
   getSurveyItems: () => request<SurveyItem[]>("/survey-items"),
-  createSession: (participantCode: string) =>
+  createSession: (participantCode: string, password: string) =>
     request<StudySession>("/sessions", {
       method: "POST",
-      body: JSON.stringify({ participant_code: participantCode }),
+      body: JSON.stringify({ participant_code: participantCode, password }),
     }),
   getSession: (sessionId: string) => request<StudySession>(`/sessions/${sessionId}`),
   listSessions: () => request<Array<Pick<StudySession, "id" | "participant_code" | "state" | "execution_mode"> & { updated_at: string }>>("/sessions"),
